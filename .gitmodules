@@ -1,0 +1,6 @@
+[submodule "server"]
+	path = server
+	url = git@github.com:scc749/go_blog_server.git
+[submodule "web"]
+	path = web
+	url = git@github.com:scc749/go_blog_web.git
