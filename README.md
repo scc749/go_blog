@@ -27,10 +27,13 @@ docker run --name redis -p 6379:6379 -d redis
 ### 启动服务
 
 ```bash
-# 进入 server 文件夹，修改配置文件 config.yaml
+# 进入 server 文件夹
+go mod tidy
+# 修改配置文件 config.yaml
 go run main.go
 
 # 进入 web 文件夹
+npm install
 npm run dev
 ```
 
@@ -67,6 +70,7 @@ systemctl enable nginx
 # windows环境下，打开项目所在目录，进入 server 文件夹，打开 cmd （不是 powershell）
 set GOOS=linux
 set GOARCH=amd64
+go mod tidy
 go build main.go
 ```
 
@@ -74,6 +78,8 @@ go build main.go
 
 ```bash
 # windows环境下，打开项目所在目录，进入 web 文件夹，打开 cmd
+npm install
+# 请将 index.html 中 http://127.0.0.1:8080/api/website/logo 替换为您的域名 https://www.your_domain/api/website/logo
 npm run build
 ```
 
