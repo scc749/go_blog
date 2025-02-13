@@ -215,6 +215,11 @@ server {
     ssl_protocols TLSv1.2 TLSv1.3;  # 配置加密协议 
     ssl_prefer_server_ciphers on;
 
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always; #可选配置，开启HSTS 
+    add_header X-Frame-Options DENY; # 可选配置，防⽌点击劫持 
+    add_header X-Content-Type-Options nosniff; # 可选配置，防⽌MIME类型嗅探 
+    add_header X-XSS-Protection "1; mode=block"; # 可选配置，防⽌XSS攻击
+
     location / {
         try_files $uri $uri/ /index.html;
         root   /opt/go_blog/web/dist;
