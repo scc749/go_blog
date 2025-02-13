@@ -33,6 +33,8 @@ go mod tidy
 go run main.go -sql
 # 初始化 es
 go run main,go -es
+# 创建管理员
+go run main.go -admin
 # 运行后端
 go run main.go
 
