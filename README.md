@@ -27,13 +27,18 @@ docker run --name redis -p 6379:6379 -d redis
 ### 启动服务
 
 ```bash
-# 进入 server 文件夹
+# 进入 server 文件夹，修改配置文件 config.yaml
 go mod tidy
-# 修改配置文件 config.yaml
+# 初始化 mysql
+go run main.go -sql
+# 初始化 es
+go run main,go -es
+# 运行后端
 go run main.go
 
 # 进入 web 文件夹
 npm install
+# 运行前端
 npm run dev
 ```
 
