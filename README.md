@@ -145,33 +145,39 @@ docker run --name es --restart=always -p 127.0.0.1:9200:9200 -e "discovery.type=
 修改 /etc/nginx/nginx.conf
 
 ```nginx
-user root;
-worker_processes auto;
-error_log /var/log/nginx/error.log;
-pid /run/nginx.pid;
+
+user  root;
+worker_processes  auto;
+
+error_log  /var/log/nginx/error.log notice;
+pid        /var/run/nginx.pid;
+
 
 events {
-    worker_connections 1024;
+    worker_connections  1024;
 }
 
+
 http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
     log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
                       '$status $body_bytes_sent "$http_referer" '
                       '"$http_user_agent" "$http_x_forwarded_for"';
 
     access_log  /var/log/nginx/access.log  main;
 
-    sendfile            on;
-    tcp_nopush          on;
-    tcp_nodelay         on;
-    keepalive_timeout   65;
-    types_hash_max_size 2048;
+    sendfile        on;
+    #tcp_nopush     on;
 
-    include             /etc/nginx/mime.types;
-    default_type        application/octet-stream;
+    keepalive_timeout  65;
+
+    #gzip  on;
 
     include /etc/nginx/conf.d/*.conf;
 }
+
 ```
 
 创建 /etc/nginx/conf.d/nginx.conf
@@ -186,7 +192,7 @@ server {
 }
 
 server { 
-    listen 443 ssl http2; 
+    listen 443 ssl; 
     server_name your_domain;  # 仅匹配非 www 的域名
     ssl_certificate /etc/nginx/cert/your_domain.crt; # 证书公钥
     ssl_certificate_key /etc/nginx/cert/your_domain.key; # 证书私钥
@@ -205,7 +211,7 @@ server {
     gzip_proxied any;
     gzip_types text/plain text/css text/xml application/javascript application/x-javascript application/xml application/xml+rss application/emacscript application/json image/svg+xml;
 
-    listen 443 ssl http2;  # 启⽤HTTP/2协议（如果⽀持） 
+    listen 443 ssl;
     server_name www.your_domain; # 多个域名⽤空格分开 
     ssl_certificate /etc/nginx/cert/your_domain.crt; # 证书公钥
     ssl_certificate_key /etc/nginx/cert/your_domain.key; # 证书私钥
