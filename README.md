@@ -32,7 +32,7 @@ go mod tidy
 # 初始化 mysql
 go run main.go -sql
 # 初始化 es
-go run main,go -es
+go run main.go -es
 # 创建管理员
 go run main.go -admin
 # 运行后端
@@ -248,7 +248,7 @@ server {
     }
 
     location /uploads/ {
-        alias /opt/go_blog/web/uploads/;
+        alias /opt/go_blog/server/uploads/;
     }
 }
 ```
