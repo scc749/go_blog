@@ -2,11 +2,60 @@
 
 gin + vue3 开发的个人博客项目
 
+## 获取代码与常用 Git 操作
+
+本项目由最大仓库和 `server`、`web` 两个 Git 子模块组成。首次克隆时使用 `--recurse-submodules`，Git 会一并拉取后端和前端代码：
+
+```bash
+git clone --recurse-submodules git@github.com:scc749/go_blog.git
+cd go_blog
+```
+
+上面的 SSH 地址要求本机已经配置好 GitHub SSH 密钥。查看当前仓库和子模块的修改状态：
+
+```bash
+git status
+```
+
+之后同步最新代码：
+
+```bash
+git pull --recurse-submodules
+git submodule update --init --remote --recursive
+```
+
+`.gitmodules` 将 `server` 和 `web` 都设为跟踪远程 `main` 分支。`--remote` 会把子模块更新到各自远程 `main` 的最新提交；最大仓库仍需提交新的子模块版本记录，其他人拉取最大仓库后才能获得相同版本。
+
+主仓库会记录 `server` 和 `web` 当前使用的子模块版本。只修改最大仓库中的文件时，在仓库根目录按常规方式提交：
+
+```bash
+git add README.md
+git commit -m "更新项目说明"
+git push
+```
+
+如果修改了前端或后端代码，需要先在对应子模块中提交并推送，再回到最大仓库提交子模块版本记录。例如修改前端时：
+
+```bash
+cd web
+git status
+git add <修改的文件>
+git commit -m "描述前端修改"
+git push
+
+cd ..
+git add web
+git commit -m "更新前端子模块版本"
+git push
+```
+
+修改后端时，把示例中的 `web` 换成 `server`。如果只拉取别人已经提交并记录在最大仓库中的子模块版本，执行 `git pull --recurse-submodules` 和 `git submodule update --init --recursive` 即可；要追到远程 `main` 的最新提交，则使用上面的 `--remote` 命令，并在最大仓库提交更新后的子模块版本记录。
+
 ## 本地测试
 
 ### 开发工具及版本
 
-golang: 1.23.5
+golang: 1.27.1
 
 node: v22.13.0
 
@@ -19,7 +68,7 @@ docker: 27.4.0
 ```bash
 docker run -itd --name mysql -p 3306:3306 -e  MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=blog_db -d mysql
 
-docker run --name es -p 127.0.0.1:9200:9200 -e "discovery.type=single-node" -e "xpack.security.http.ssl.enabled=false" -e "xpack.license.self_generated.type=trial" -e "xpack.security.enabled=false" -e ES_JAVA_OPTS="-Xms84m -Xmx512m" -d elasticsearch:8.17.0
+docker run --name es -p 127.0.0.1:9200:9200 -e "discovery.type=single-node" -e "xpack.security.http.ssl.enabled=false" -e "xpack.license.self_generated.type=trial" -e "xpack.security.enabled=false" -e ES_JAVA_OPTS="-Xms84m -Xmx512m" -d elasticsearch:8.19.0
 
 docker run --name redis -p 6379:6379 -d redis
 ```
@@ -77,8 +126,9 @@ systemctl enable nginx
 # windows环境下，打开项目所在目录，进入 server 文件夹，打开 cmd （不是 powershell）
 set GOOS=linux
 set GOARCH=amd64
+set CGO_ENABLED=0
 go mod tidy
-go build main.go
+go build -o main main.go
 ```
 
 编译前端，得到 dist 文件夹
@@ -127,7 +177,7 @@ elasticsearch 无法直接数据卷挂载本地，需要先启动一个不挂载
 
 ```bash
 # 复制文件
-docker run --name es --restart=always -p 127.0.0.1:9200:9200 -e "discovery.type=single-node" -e "xpack.security.http.ssl.enabled=false" -e "xpack.license.self_generated.type=trial" -e "xpack.security.enabled=false" -e ES_JAVA_OPTS="-Xms84m -Xmx512m"  -d elasticsearch:8.17.0
+docker run --name es --restart=always -p 127.0.0.1:9200:9200 -e "discovery.type=single-node" -e "xpack.security.http.ssl.enabled=false" -e "xpack.license.self_generated.type=trial" -e "xpack.security.enabled=false" -e ES_JAVA_OPTS="-Xms84m -Xmx512m"  -d elasticsearch:8.19.0
 
 docker cp es:/usr/share/elasticsearch/config /opt/go_blog/server/data/es/config
 docker cp es:/usr/share/elasticsearch/data /opt/go_blog/server/data/es/data 
@@ -137,7 +187,7 @@ docker rm -f es
 ```
 
 ```
-docker run --name es --restart=always -p 127.0.0.1:9200:9200 -e "discovery.type=single-node" -e "xpack.security.http.ssl.enabled=false" -e "xpack.license.self_generated.type=trial" -e "xpack.security.enabled=false" -e ES_JAVA_OPTS="-Xms84m -Xmx512m" -v /opt/go_blog/server/data/es/config:/usr/share/elasticsearch/config -v /opt/go_blog/server/data/es/data:/usr/share/elasticsearch/data -v /opt/go_blog/server/data/es/plugins:/usr/share/elasticsearch/plugins  -d elasticsearch:8.17.0
+docker run --name es --restart=always -p 127.0.0.1:9200:9200 -e "discovery.type=single-node" -e "xpack.security.http.ssl.enabled=false" -e "xpack.license.self_generated.type=trial" -e "xpack.security.enabled=false" -e ES_JAVA_OPTS="-Xms84m -Xmx512m" -v /opt/go_blog/server/data/es/config:/usr/share/elasticsearch/config -v /opt/go_blog/server/data/es/data:/usr/share/elasticsearch/data -v /opt/go_blog/server/data/es/plugins:/usr/share/elasticsearch/plugins  -d elasticsearch:8.19.0
 ```
 
 ### nginx配置

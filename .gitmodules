@@ -1,6 +1,8 @@
 [submodule "server"]
 	path = server
 	url = git@github.com:scc749/go_blog_server.git
+	branch = main
 [submodule "web"]
 	path = web
 	url = git@github.com:scc749/go_blog_web.git
+	branch = main
